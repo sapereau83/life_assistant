@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_11_151922) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_11_154823) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "meals", force: :cascade do |t|
+    t.text "breakfast"
+    t.datetime "created_at", null: false
+    t.text "dinner"
+    t.text "lunch"
+    t.date "recorded_on", null: false
+    t.text "snacks"
+    t.datetime "updated_at", null: false
+    t.index ["recorded_on"], name: "index_meals_on_recorded_on", unique: true
+  end
 
   create_table "tasks", force: :cascade do |t|
     t.datetime "completed_at"
@@ -34,5 +45,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_151922) do
     t.datetime "updated_at", null: false
     t.decimal "weight_kg", precision: 5, scale: 2, null: false
     t.index ["recorded_on"], name: "index_weight_entries_on_recorded_on", unique: true
+  end
+
+  create_table "workouts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "duration_minutes"
+    t.date "recorded_on", null: false
+    t.integer "steps"
+    t.datetime "updated_at", null: false
+    t.index ["recorded_on"], name: "index_workouts_on_recorded_on", unique: true
   end
 end

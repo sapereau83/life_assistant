@@ -1,0 +1,53 @@
+<%
+  logged_days = meals.count
+  last_logged = meals.first&.recorded_on
+%>
+
+<%# ---- Stat tiles ---- %>
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Jours enregistrés</p>
+    <p class="mt-1 text-2xl font-bold text-boxdark"><%= logged_days %></p>
+    <p class="text-xs text-body">journées de repas notées</p>
+  </div>
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Dernière saisie</p>
+    <p class="mt-1 text-2xl font-bold text-boxdark">
+      <%= last_logged ? l(last_logged, format: :short) : "—" %>
+    </p>
+    <p class="text-xs text-body">dernier jour renseigné</p>
+  </div>
+</div>
+
+<%# ---- Table + add row ---- %>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="border-b border-stroke px-6 py-4">
+    <h2 class="text-lg font-semibold text-boxdark">Journal alimentaire</h2>
+  </div>
+
+  <div class="px-4 py-4 sm:px-6">
+    <%= render "meals/form", meal: meal %>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[820px] text-left align-top text-sm">
+      <thead>
+        <tr class="border-y border-stroke bg-gray-2 text-xs uppercase tracking-wider text-body">
+          <th class="px-4 py-3 font-medium">Date</th>
+          <th class="px-4 py-3 font-medium">Petit-déj</th>
+          <th class="px-4 py-3 font-medium">Déjeuner</th>
+          <th class="px-4 py-3 font-medium">Dîner</th>
+          <th class="px-4 py-3 font-medium">Snacks</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stroke">
+        <% if meals.empty? %>
+          <tr><td colspan="6" class="px-6 py-10 text-center text-body">Aucun repas noté pour le moment.</td></tr>
+        <% else %>
+          <%= render partial: "meals/entry", collection: meals, as: :meal %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

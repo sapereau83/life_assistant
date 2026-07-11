@@ -1,0 +1,29 @@
+<%= form_with model: workout, url: workouts_path, method: :post, id: "new_workout_form" do |f| %>
+  <% if workout.errors.any? %>
+    <p class="mb-2 text-xs text-danger"><%= workout.errors.full_messages.to_sentence %></p>
+  <% end %>
+  <div class="flex flex-col gap-3 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-3 lg:flex-row lg:items-end">
+    <div class="lg:w-44">
+      <label class="mb-1 block text-xs font-medium text-body">Date</label>
+      <%= f.date_field :recorded_on,
+            class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+    </div>
+    <div class="flex-1">
+      <label class="mb-1 block text-xs font-medium text-body">Exercice</label>
+      <%= f.text_field :description, autocomplete: "off", placeholder: "ex. vélo, kettlebell…",
+            class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+    </div>
+    <div class="lg:w-32">
+      <label class="mb-1 block text-xs font-medium text-body">Durée (min)</label>
+      <%= f.number_field :duration_minutes, min: 0, placeholder: "ex. 20",
+            class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+    </div>
+    <div class="lg:w-36">
+      <label class="mb-1 block text-xs font-medium text-body">Pas</label>
+      <%= f.number_field :steps, min: 0, placeholder: "ex. 10000",
+            class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+    </div>
+    <%= f.submit "Enregistrer",
+          class: "cursor-pointer rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-dark" %>
+  </div>
+<% end %>

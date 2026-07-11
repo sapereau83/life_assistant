@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  recorded_on: 2026-07-11
+  breakfast: MyText
+  lunch: MyText
+  dinner: MyText
+  snacks: MyText
+
+two:
+  recorded_on: 2026-07-11
+  breakfast: MyText
+  lunch: MyText
+  dinner: MyText
+  snacks: MyText

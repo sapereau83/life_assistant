@@ -1,0 +1,74 @@
+<%
+  active_days = workouts.count(&:active?)
+  step_values = workouts.map { |w| w.steps.to_i }.select(&:positive?)
+  avg_steps = step_values.any? ? (step_values.sum / step_values.size) : nil
+  best_steps = step_values.max
+  chart = steps_chart(workouts.map { |w| [ w.recorded_on, w.steps ] }.reverse)
+%>
+
+<%# ---- Stat tiles ---- %>
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Jours actifs</p>
+    <p class="mt-1 text-2xl font-bold text-boxdark"><%= active_days %></p>
+    <p class="text-xs text-body">séances enregistrées</p>
+  </div>
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Moyenne de pas</p>
+    <p class="mt-1 text-2xl font-bold text-boxdark"><%= avg_steps ? number_with_delimiter(avg_steps) : "—" %></p>
+    <p class="text-xs text-body">par jour suivi</p>
+  </div>
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Record de pas</p>
+    <p class="mt-1 text-2xl font-bold text-primary"><%= best_steps ? number_with_delimiter(best_steps) : "—" %></p>
+    <p class="text-xs text-body">meilleure journée</p>
+  </div>
+</div>
+
+<%# ---- Steps chart ---- %>
+<div class="mb-6 rounded-lg border border-stroke bg-white p-5 shadow-default">
+  <h2 class="mb-4 text-lg font-semibold text-boxdark">Pas quotidiens</h2>
+  <% if chart %>
+    <svg viewBox="0 0 <%= chart[:width] %> <%= chart[:height] %>" class="h-52 w-full" preserveAspectRatio="none" role="img" aria-label="Pas quotidiens">
+      <line x1="<%= chart[:pad] %>" y1="<%= chart[:height] - chart[:pad] %>" x2="<%= chart[:width] - chart[:pad] %>" y2="<%= chart[:height] - chart[:pad] %>" stroke="#e2e8f0" stroke-width="1" />
+      <% chart[:bars].each do |b| %>
+        <rect x="<%= b[:x] %>" y="<%= b[:y] %>" width="<%= b[:w] %>" height="<%= b[:h] %>" rx="2" fill="#3c50e0" fill-opacity="0.85" />
+      <% end %>
+      <text x="<%= chart[:pad] %>" y="<%= chart[:pad] - 10 %>" font-size="11" fill="#94a3b8">max <%= number_with_delimiter(chart[:max]) %> pas</text>
+    </svg>
+  <% else %>
+    <p class="py-10 text-center text-sm text-body">Ajoute au moins deux journées avec des pas pour voir le graphe.</p>
+  <% end %>
+</div>
+
+<%# ---- Table + add row ---- %>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="border-b border-stroke px-6 py-4">
+    <h2 class="text-lg font-semibold text-boxdark">Historique</h2>
+  </div>
+
+  <div class="px-4 py-4 sm:px-6">
+    <%= render "workouts/form", workout: workout %>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[620px] text-left align-top text-sm">
+      <thead>
+        <tr class="border-y border-stroke bg-gray-2 text-xs uppercase tracking-wider text-body">
+          <th class="px-6 py-3 font-medium">Date</th>
+          <th class="px-6 py-3 font-medium">Exercice</th>
+          <th class="px-6 py-3 font-medium">Durée</th>
+          <th class="px-6 py-3 font-medium">Pas</th>
+          <th class="px-6 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stroke">
+        <% if workouts.empty? %>
+          <tr><td colspan="5" class="px-6 py-10 text-center text-body">Aucune séance pour le moment.</td></tr>
+        <% else %>
+          <%= render partial: "workouts/entry", collection: workouts, as: :workout %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

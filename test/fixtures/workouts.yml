@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  recorded_on: 2026-07-11
+  description: MyText
+  duration_minutes: 1
+  steps: 1
+
+two:
+  recorded_on: 2026-07-11
+  description: MyText
+  duration_minutes: 1
+  steps: 1

@@ -1,0 +1,7 @@
+<% content_for :title, "Sport · Life Assistant" %>
+<% content_for :page_title, "Suivi du sport" %>
+<% content_for :page_subtitle, "Exercice, durée et pas du jour. Ligne d'ajout préremplie à aujourd'hui." %>
+
+<div id="workout_board" class="pb-24 lg:pb-6">
+  <%= render "board", workouts: @workouts, workout: @workout %>
+</div>

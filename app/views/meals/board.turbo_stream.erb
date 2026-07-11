@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "meal_board" do %>
+  <div id="meal_board" class="pb-24 lg:pb-6">
+    <%= render "board", meals: @meals, meal: @meal %>
+  </div>
+<% end %>

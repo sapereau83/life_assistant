@@ -1,0 +1,7 @@
+<% content_for :title, "Repas · Life Assistant" %>
+<% content_for :page_title, "Suivi des repas" %>
+<% content_for :page_subtitle, "Note ce que tu manges. La ligne d'ajout est préremplie à aujourd'hui." %>
+
+<div id="meal_board" class="pb-24 lg:pb-6">
+  <%= render "board", meals: @meals, meal: @meal %>
+</div>
