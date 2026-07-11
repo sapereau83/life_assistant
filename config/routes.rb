@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     end
   end
   get "today" => "tasks#index", as: :today
+  get "todos" => "tasks#list", as: :todos
   get "dashboard" => "dashboard#index", as: :dashboard
 
   resources :weight_entries, only: %i[index create update destroy]

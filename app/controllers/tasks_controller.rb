@@ -1,7 +1,13 @@
 class TasksController < ApplicationController
   before_action :set_task, only: %i[update destroy complete reopen move_to_today]
 
+  # "Aujourd'hui" board: today's list + the "à valider" bucket.
   def index
+    load_board
+  end
+
+  # Simple flat checklist of everything still to do (todo + bucket).
+  def list
     load_board
   end
 
@@ -16,7 +22,7 @@ class TasksController < ApplicationController
       load_board
       respond_to do |format|
         format.turbo_stream { render :board, status: :unprocessable_entity }
-        format.html { redirect_to root_path, alert: @task.errors.full_messages.to_sentence }
+        format.html { redirect_back fallback_location: root_path, alert: @task.errors.full_messages.to_sentence }
       end
     end
   end
@@ -59,6 +65,9 @@ class TasksController < ApplicationController
   def load_board
     @today_tasks = Task.for_day(Date.current).where(state: %i[todo done]).ordered
     @bucket = Task.bucket
+    # Flat "Mes tâches" list: everything still open, plus today's done items.
+    @list_active = Task.where(state: %i[todo to_validate]).order(day: :asc, position: :asc)
+    @list_done = Task.done.for_day(Date.current).ordered
     @task ||= Task.new
   end
 
@@ -66,7 +75,7 @@ class TasksController < ApplicationController
     load_board
     respond_to do |format|
       format.turbo_stream { render :board }
-      format.html { redirect_to root_path }
+      format.html { redirect_back fallback_location: root_path }
     end
   end
 end

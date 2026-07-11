@@ -1,0 +1,33 @@
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-boxdark">À faire</h2>
+      <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"><%= list_active.size %></span>
+    </div>
+    <%= link_to "Vue du jour →", today_path, class: "text-sm font-medium text-primary hover:underline" %>
+  </div>
+
+  <%# Quick add %>
+  <div class="border-b border-stroke px-6 py-4">
+    <%= render "tasks/form", task: task %>
+  </div>
+
+  <%# Active tasks (todo + bucket), flat %>
+  <ul class="divide-y divide-stroke">
+    <% if list_active.empty? %>
+      <li class="px-6 py-10 text-center text-sm text-body">Tout est fait 🎉</li>
+    <% else %>
+      <%= render partial: "tasks/todo_item", collection: list_active, as: :task %>
+    <% end %>
+  </ul>
+
+  <%# Done today %>
+  <% if list_done.any? %>
+    <div class="border-t border-stroke px-6 py-3">
+      <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-body">Fait aujourd'hui (<%= list_done.size %>)</p>
+    </div>
+    <ul class="divide-y divide-stroke">
+      <%= render partial: "tasks/todo_item", collection: list_done, as: :task %>
+    </ul>
+  <% end %>
+</div>

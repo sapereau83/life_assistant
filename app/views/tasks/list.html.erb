@@ -1,0 +1,9 @@
+<% content_for :title, "Mes tâches · Life Assistant" %>
+<% content_for :page_title, "Mes tâches" %>
+<% content_for :page_subtitle, "Toutes tes tâches à faire, en une liste simple." %>
+
+<div class="mx-auto max-w-2xl pb-24 lg:pb-6">
+  <div id="todo_list">
+    <%= render "todo_list", list_active: @list_active, list_done: @list_done, task: @task %>
+  </div>
+</div>

@@ -25,6 +25,12 @@
         <% end %>
       </li>
       <li>
+        <%= link_to todos_path, class: "group flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition #{nav.call(current_page?(todos_path))}" do %>
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          Mes tâches
+        <% end %>
+      </li>
+      <li>
         <%= link_to weight_entries_path, class: "group flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition #{nav.call(controller_name == 'weight_entries')}" do %>
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg>
           Poids
@@ -59,6 +65,10 @@
   <%= link_to today_path, class: "flex flex-col items-center gap-0.5 text-xs #{current_page?(today_path) ? 'text-primary' : 'text-body'}" do %>
     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     Aujourd'hui
+  <% end %>
+  <%= link_to todos_path, class: "flex flex-col items-center gap-0.5 text-xs #{current_page?(todos_path) ? 'text-primary' : 'text-body'}" do %>
+    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+    Tâches
   <% end %>
   <%= link_to weight_entries_path, class: "flex flex-col items-center gap-0.5 text-xs #{controller_name == 'weight_entries' ? 'text-primary' : 'text-body'}" do %>
     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg>
