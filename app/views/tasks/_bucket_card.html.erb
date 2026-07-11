@@ -1,0 +1,21 @@
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-boxdark">À valider</h2>
+      <span class="rounded-full bg-warning/10 px-2.5 py-0.5 text-xs font-medium text-warning">
+        <%= bucket.size %>
+      </span>
+    </div>
+    <span class="text-sm text-body">Reporté des jours précédents</span>
+  </div>
+
+  <ul class="divide-y divide-stroke">
+    <% if bucket.empty? %>
+      <li class="px-6 py-10 text-center text-sm text-body">
+        Rien à valider 🎉 Tu es à jour.
+      </li>
+    <% else %>
+      <%= render partial: "tasks/bucket_task", collection: bucket, as: :task %>
+    <% end %>
+  </ul>
+</div>

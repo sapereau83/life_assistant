@@ -1,0 +1,13 @@
+<% content_for :title, "Aujourd'hui · Life Assistant" %>
+<% content_for :page_title, "Aujourd'hui" %>
+<% content_for :page_subtitle, "Ta TODO du jour. À minuit, tout ce qui n'est pas fait bascule dans « À valider »." %>
+
+<div class="grid grid-cols-1 gap-6 pb-24 lg:grid-cols-2 lg:pb-6">
+  <div id="today_card">
+    <%= render "today_card", today_tasks: @today_tasks, task: @task %>
+  </div>
+
+  <div id="bucket_card">
+    <%= render "bucket_card", bucket: @bucket %>
+  </div>
+</div>

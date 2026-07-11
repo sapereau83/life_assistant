@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "weight_board" do %>
+  <div id="weight_board" class="pb-24 lg:pb-6">
+    <%= render "board", entries: @entries, entry: @entry %>
+  </div>
+<% end %>

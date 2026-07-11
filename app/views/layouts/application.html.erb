@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title><%= content_for(:title) || "Life Assistant" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Life Assistant">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="text-body font-normal antialiased">
+    <div class="flex h-screen overflow-hidden">
+      <%= render "layouts/sidebar" %>
+
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <header class="sticky top-0 z-40 flex w-full border-b border-stroke bg-white">
+          <div class="flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-10">
+            <div>
+              <h1 class="text-lg font-semibold text-boxdark md:text-xl">
+                <%= content_for(:page_title) || "Life Assistant" %>
+              </h1>
+              <p class="text-sm text-body"><%= content_for(:page_subtitle) %></p>
+            </div>
+            <div class="hidden text-right sm:block">
+              <p class="text-sm font-medium text-boxdark"><%= l(Date.current, format: :long) %></p>
+              <p class="text-xs text-body">Semaine <%= Date.current.cweek %></p>
+            </div>
+          </div>
+        </header>
+
+        <main>
+          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <% if notice %>
+              <div class="mb-6 rounded-lg border border-success/40 bg-success/10 px-4 py-3 text-sm text-success"><%= notice %></div>
+            <% end %>
+            <% if alert %>
+              <div class="mb-6 rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger"><%= alert %></div>
+            <% end %>
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

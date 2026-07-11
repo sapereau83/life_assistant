@@ -1,0 +1,88 @@
+<%
+  current = entries.first
+  oldest  = entries.last
+  total_delta = (current && oldest) ? (current.weight_kg - oldest.weight_kg) : nil
+  chart = weight_chart(entries.to_a.reverse)
+%>
+
+<%# ---- Stat tiles ---- %>
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Poids actuel</p>
+    <p class="mt-1 text-2xl font-bold text-boxdark">
+      <%= current ? "#{number_with_precision(current.weight_kg, precision: 1)} kg" : "—" %>
+    </p>
+    <% if current&.recorded_on %>
+      <p class="text-xs text-body">au <%= l(current.recorded_on, format: :short) %></p>
+    <% end %>
+  </div>
+
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Évolution totale</p>
+    <p class="mt-1 text-2xl font-bold <%= total_delta.to_f <= 0 ? 'text-success' : 'text-danger' %>">
+      <%= total_delta ? "#{total_delta > 0 ? '+' : ''}#{number_with_precision(total_delta, precision: 1)} kg" : "—" %>
+    </p>
+    <p class="text-xs text-body">depuis le début du suivi</p>
+  </div>
+
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">Pesées enregistrées</p>
+    <p class="mt-1 text-2xl font-bold text-boxdark"><%= entries.size %></p>
+    <p class="text-xs text-body">jours suivis</p>
+  </div>
+</div>
+
+<%# ---- Chart ---- %>
+<div class="mb-6 rounded-lg border border-stroke bg-white p-5 shadow-default">
+  <h2 class="mb-4 text-lg font-semibold text-boxdark">Courbe de poids</h2>
+  <% if chart %>
+    <svg viewBox="0 0 <%= chart[:width] %> <%= chart[:height] %>" class="h-56 w-full" preserveAspectRatio="none" role="img" aria-label="Courbe d'évolution du poids">
+      <% [0.0, 0.5, 1.0].each do |r| %>
+        <% y = chart[:pad] + (chart[:height] - chart[:pad] * 2) * r %>
+        <line x1="<%= chart[:pad] %>" y1="<%= y %>" x2="<%= chart[:width] - chart[:pad] %>" y2="<%= y %>" stroke="#e2e8f0" stroke-width="1" />
+        <text x="<%= chart[:pad] - 6 %>" y="<%= y + 4 %>" text-anchor="end" font-size="11" fill="#94a3b8">
+          <%= number_with_precision(chart[:max] - (chart[:max] - chart[:min]) * r, precision: 1) %>
+        </text>
+      <% end %>
+      <polygon points="<%= chart[:area] %>" fill="#3c50e0" fill-opacity="0.08" />
+      <polyline points="<%= chart[:line] %>" fill="none" stroke="#3c50e0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+      <% chart[:coords].each do |c| %>
+        <circle cx="<%= c[:x] %>" cy="<%= c[:y] %>" r="2.5" fill="#3c50e0" />
+      <% end %>
+    </svg>
+  <% else %>
+    <p class="py-10 text-center text-sm text-body">Ajoute au moins deux pesées pour voir la courbe.</p>
+  <% end %>
+</div>
+
+<%# ---- Table + add row ---- %>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="border-b border-stroke px-6 py-4">
+    <h2 class="text-lg font-semibold text-boxdark">Historique</h2>
+  </div>
+
+  <div class="px-4 py-4 sm:px-6">
+    <%= render "weight_entries/form", entry: entry %>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[560px] text-left text-sm">
+      <thead>
+        <tr class="border-y border-stroke bg-gray-2 text-xs uppercase tracking-wider text-body">
+          <th class="px-6 py-3 font-medium">Date</th>
+          <th class="px-6 py-3 font-medium">Poids</th>
+          <th class="px-6 py-3 font-medium">Δ</th>
+          <th class="px-6 py-3 font-medium">Note</th>
+          <th class="px-6 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stroke">
+        <% if entries.empty? %>
+          <tr><td colspan="5" class="px-6 py-10 text-center text-body">Aucune pesée pour le moment.</td></tr>
+        <% else %>
+          <%= render partial: "weight_entries/entry", collection: entries, as: :entry %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<% remaining = today_tasks.count { |t| t.todo? } %>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-boxdark">Ma journée</h2>
+      <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+        <%= remaining %> à faire
+      </span>
+    </div>
+    <span class="text-sm text-body"><%= today_tasks.size %> tâche<%= "s" if today_tasks.size > 1 %></span>
+  </div>
+
+  <ul class="divide-y divide-stroke">
+    <% if today_tasks.empty? %>
+      <li class="px-6 py-10 text-center text-sm text-body">
+        Rien pour aujourd'hui. Ajoute ta première tâche ci-dessous 👇
+      </li>
+    <% else %>
+      <%= render partial: "tasks/task", collection: today_tasks, as: :task %>
+    <% end %>
+  </ul>
+
+  <div class="border-t border-stroke px-6 py-4">
+    <%= render "tasks/form", task: task %>
+  </div>
+</div>

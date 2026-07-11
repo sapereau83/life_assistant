@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "today_card" do %>
+  <div id="today_card">
+    <%= render "today_card", today_tasks: @today_tasks, task: @task %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "bucket_card" do %>
+  <div id="bucket_card">
+    <%= render "bucket_card", bucket: @bucket %>
+  </div>
+<% end %>

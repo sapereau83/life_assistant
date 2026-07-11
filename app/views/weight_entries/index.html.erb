@@ -1,0 +1,7 @@
+<% content_for :title, "Poids · Life Assistant" %>
+<% content_for :page_title, "Suivi du poids" %>
+<% content_for :page_subtitle, "Ajoute ta pesée du jour. La ligne du haut est préremplie à aujourd'hui." %>
+
+<div id="weight_board" class="pb-24 lg:pb-6">
+  <%= render "board", entries: @entries, entry: @entry %>
+</div>

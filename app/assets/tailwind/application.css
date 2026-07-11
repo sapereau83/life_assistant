@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* TailAdmin design tokens */
+@theme {
+  --color-primary: #3c50e0;
+  --color-primary-dark: #2a3bc4;
+  --color-secondary: #80caee;
+  --color-body: #64748b;
+  --color-bodydark: #aeb7c0;
+  --color-boxdark: #24303f;
+  --color-sidebar: #1c2434;
+  --color-stroke: #e2e8f0;
+  --color-gray-2: #f7f9fc;
+  --color-graydark: #333a48;
+  --color-whiten: #f1f5f9;
+  --color-success: #10b981;
+  --color-danger: #fb5454;
+  --color-warning: #ffa70b;
+
+  --shadow-default: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  background-color: var(--color-whiten);
+}

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  state: 1
+  day: 2026-07-11
+  position: 1
+  completed_at: 2026-07-11 17:19:22
+  rolled_over_at: 2026-07-11 17:19:22
+
+two:
+  title: MyString
+  state: 1
+  day: 2026-07-11
+  position: 1
+  completed_at: 2026-07-11 17:19:22
+  rolled_over_at: 2026-07-11 17:19:22
