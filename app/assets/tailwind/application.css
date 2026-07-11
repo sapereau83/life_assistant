@@ -24,3 +24,25 @@
 body {
   background-color: var(--color-whiten);
 }
+
+/* Interactive chart bits driven by the chart-tooltip Stimulus controller */
+.chart-hit {
+  cursor: pointer;
+}
+.chart-point--active {
+  r: 5;
+  fill-opacity: 1;
+}
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -130%);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+  border-radius: 6px;
+  background: var(--color-boxdark);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 11px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}

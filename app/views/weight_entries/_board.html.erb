@@ -76,13 +76,11 @@
           <th class="px-6 py-3"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-stroke">
-        <% if entries.empty? %>
-          <tr><td colspan="5" class="px-6 py-10 text-center text-body">Aucune pesée pour le moment.</td></tr>
-        <% else %>
-          <%= render partial: "weight_entries/entry", collection: entries, as: :entry %>
-        <% end %>
-      </tbody>
+      <% if entries.empty? %>
+        <tbody><tr><td colspan="5" class="px-6 py-10 text-center text-body">Aucune pesée pour le moment.</td></tr></tbody>
+      <% else %>
+        <%= render partial: "weight_entries/entry", collection: entries, as: :entry %>
+      <% end %>
     </table>
   </div>
 </div>

@@ -1,0 +1,213 @@
+<% content_for :title, "Accueil · Life Assistant" %>
+<% content_for :page_title, "Tableau de bord" %>
+<% content_for :page_subtitle, "Vue d'ensemble de ta journée et de tes tendances." %>
+
+<%
+  total_change = @insights.total_weight_change
+  corr = @insights.correlation_insight
+  today_steps = @workout_today&.steps
+  weight_chart = weight_chart(@weight_series.to_a)
+  steps_chart = steps_chart(@steps_series.map { |w| [ w.recorded_on, w.steps ] })
+  scatter = scatter_chart(@insights.scatter)
+%>
+
+<%# ============ Snapshot tiles ============ %>
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <%# Tasks %>
+  <%= link_to today_path, class: "block rounded-lg border border-stroke bg-white p-5 shadow-default transition hover:border-primary" do %>
+    <div class="mb-2 flex items-center justify-between">
+      <span class="text-sm text-body">Tâches du jour</span>
+      <span class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </span>
+    </div>
+    <p class="text-2xl font-bold text-boxdark">
+      <span data-controller="counter" data-counter-end-value="<%= @tasks_done %>"><%= @tasks_done %></span>
+      <span class="text-lg text-body">/ <%= @tasks_today.size %> faites</span>
+    </p>
+    <p class="text-xs text-body"><%= @bucket_count %> à valider</p>
+  <% end %>
+
+  <%# Weight %>
+  <%= link_to weight_entries_path, class: "block rounded-lg border border-stroke bg-white p-5 shadow-default transition hover:border-primary" do %>
+    <div class="mb-2 flex items-center justify-between">
+      <span class="text-sm text-body">Poids actuel</span>
+      <span class="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/20 text-secondary">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg>
+      </span>
+    </div>
+    <p class="text-2xl font-bold text-boxdark">
+      <% if @weight_latest %>
+        <span data-controller="counter" data-counter-end-value="<%= @weight_latest.weight_kg %>" data-counter-decimals-value="1" data-counter-suffix-value=" kg"><%= number_with_precision(@weight_latest.weight_kg, precision: 1) %> kg</span>
+      <% else %>—<% end %>
+    </p>
+    <% if total_change %>
+      <p class="text-xs font-medium <%= total_change <= 0 ? 'text-success' : 'text-danger' %>">
+        <%= total_change > 0 ? "+" : "" %><%= number_with_precision(total_change, precision: 1) %> kg depuis le début
+      </p>
+    <% end %>
+  <% end %>
+
+  <%# Steps %>
+  <%= link_to workouts_path, class: "block rounded-lg border border-stroke bg-white p-5 shadow-default transition hover:border-primary" do %>
+    <div class="mb-2 flex items-center justify-between">
+      <span class="text-sm text-body">Pas aujourd'hui</span>
+      <span class="flex h-9 w-9 items-center justify-center rounded-full bg-warning/10 text-warning">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+      </span>
+    </div>
+    <p class="text-2xl font-bold text-boxdark">
+      <% if today_steps.present? %>
+        <span data-controller="counter" data-counter-end-value="<%= today_steps %>"><%= number_with_delimiter(today_steps) %></span>
+      <% else %><span class="text-body">pas encore</span><% end %>
+    </p>
+    <p class="text-xs text-body">moy. <%= @insights.avg_steps ? number_with_delimiter(@insights.avg_steps) : "—" %> / jour</p>
+  <% end %>
+
+  <%# Meals %>
+  <%= link_to meals_path, class: "block rounded-lg border border-stroke bg-white p-5 shadow-default transition hover:border-primary" do %>
+    <div class="mb-2 flex items-center justify-between">
+      <span class="text-sm text-body">Repas du jour</span>
+      <span class="flex h-9 w-9 items-center justify-center rounded-full bg-success/10 text-success">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M4 3v18M4 8h6a2 2 0 002-2V3M20 3v18M18 3v6a2 2 0 002 2"/></svg>
+      </span>
+    </div>
+    <p class="text-2xl font-bold <%= @meal_today && !@meal_today.blank_day? ? 'text-boxdark' : 'text-body' %>">
+      <%= @meal_today && !@meal_today.blank_day? ? "Noté ✓" : "À noter" %>
+    </p>
+    <p class="text-xs text-body">🔥 <%= @insights.logging_streak %> j. de suivi d'affilée</p>
+  <% end %>
+</div>
+
+<%# ============ Weight + Steps charts ============ %>
+<div class="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+  <%# Weight trend %>
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-boxdark">Tendance du poids</h2>
+      <span class="text-xs text-body"><%= @weight_series.size %> dernières pesées</span>
+    </div>
+    <% if weight_chart %>
+      <div class="relative" data-controller="chart-tooltip">
+        <svg viewBox="0 0 <%= weight_chart[:width] %> <%= weight_chart[:height] %>" class="h-56 w-full" preserveAspectRatio="none" role="img" aria-label="Tendance du poids">
+          <% [0.0, 0.5, 1.0].each do |r| %>
+            <% gy = weight_chart[:pad] + (weight_chart[:height] - weight_chart[:pad] * 2) * r %>
+            <line x1="<%= weight_chart[:pad] %>" y1="<%= gy %>" x2="<%= weight_chart[:width] - weight_chart[:pad] %>" y2="<%= gy %>" stroke="#e2e8f0" stroke-width="1" />
+          <% end %>
+          <polygon points="<%= weight_chart[:area] %>" fill="#3c50e0" fill-opacity="0.08" />
+          <polyline points="<%= weight_chart[:line] %>" fill="none" stroke="#3c50e0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+          <% weight_chart[:coords].each do |c| %>
+            <circle cx="<%= c[:x] %>" cy="<%= c[:y] %>" r="2.5" fill="#3c50e0" />
+            <circle class="chart-hit" cx="<%= c[:x] %>" cy="<%= c[:y] %>" r="9" fill="transparent"
+              data-action="mouseenter->chart-tooltip#show mouseleave->chart-tooltip#hide"
+              data-label="<%= l(c[:date], format: :short) %> · <%= number_with_precision(c[:kg], precision: 1) %> kg" />
+          <% end %>
+        </svg>
+        <div class="chart-tooltip" data-chart-tooltip-target="tooltip" hidden></div>
+      </div>
+    <% else %>
+      <p class="py-12 text-center text-sm text-body">Pas encore assez de pesées.</p>
+    <% end %>
+  </div>
+
+  <%# Steps 14 days %>
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-boxdark">Pas · 14 derniers jours</h2>
+      <span class="text-xs text-body">record <%= @insights.best_steps ? number_with_delimiter(@insights.best_steps) : "—" %></span>
+    </div>
+    <% if steps_chart %>
+      <div class="relative" data-controller="chart-tooltip">
+        <svg viewBox="0 0 <%= steps_chart[:width] %> <%= steps_chart[:height] %>" class="h-56 w-full" preserveAspectRatio="none" role="img" aria-label="Pas quotidiens">
+          <line x1="<%= steps_chart[:pad] %>" y1="<%= steps_chart[:height] - steps_chart[:pad] %>" x2="<%= steps_chart[:width] - steps_chart[:pad] %>" y2="<%= steps_chart[:height] - steps_chart[:pad] %>" stroke="#e2e8f0" stroke-width="1" />
+          <% steps_chart[:bars].each do |b| %>
+            <rect x="<%= b[:x] %>" y="<%= b[:y] %>" width="<%= b[:w] %>" height="<%= b[:h] %>" rx="2" fill="#3c50e0" fill-opacity="0.85"
+              class="chart-hit"
+              data-action="mouseenter->chart-tooltip#show mouseleave->chart-tooltip#hide"
+              data-label="<%= l(b[:date], format: :short) %> · <%= number_with_delimiter(b[:steps]) %> pas" />
+          <% end %>
+        </svg>
+        <div class="chart-tooltip" data-chart-tooltip-target="tooltip" hidden></div>
+      </div>
+    <% else %>
+      <p class="py-12 text-center text-sm text-body">Pas encore assez de données de pas.</p>
+    <% end %>
+  </div>
+</div>
+
+<%# ============ Insights (correlation) ============ %>
+<div class="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default lg:col-span-2">
+    <h2 class="mb-1 text-lg font-semibold text-boxdark">Corrélation pas ↔ poids</h2>
+    <p class="mb-4 text-sm text-body">Chaque point = un jour : pas effectués vs. variation de poids par rapport à la pesée précédente.</p>
+    <% if scatter %>
+      <div class="relative" data-controller="chart-tooltip">
+        <svg viewBox="0 0 <%= scatter[:width] %> <%= scatter[:height] %>" class="h-64 w-full" role="img" aria-label="Corrélation pas et poids">
+          <% if scatter[:zero_y] %>
+            <line x1="<%= scatter[:pad] %>" y1="<%= scatter[:zero_y] %>" x2="<%= scatter[:width] - scatter[:pad] %>" y2="<%= scatter[:zero_y] %>" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 4" />
+            <text x="<%= scatter[:width] - scatter[:pad] %>" y="<%= scatter[:zero_y] - 6 %>" text-anchor="end" font-size="11" fill="#94a3b8">poids stable</text>
+          <% end %>
+          <% scatter[:dots].each do |dot| %>
+            <circle class="chart-hit" cx="<%= dot[:x] %>" cy="<%= dot[:y] %>" r="5"
+              fill="<%= dot[:gain] ? '#fb5454' : '#10b981' %>" fill-opacity="0.75"
+              data-action="mouseenter->chart-tooltip#show mouseleave->chart-tooltip#hide"
+              data-label="<%= dot[:label] %>" />
+          <% end %>
+          <text x="<%= scatter[:pad] %>" y="<%= scatter[:height] - 8 %>" font-size="11" fill="#94a3b8">← moins de pas</text>
+          <text x="<%= scatter[:width] - scatter[:pad] %>" y="<%= scatter[:height] - 8 %>" text-anchor="end" font-size="11" fill="#94a3b8">plus de pas →</text>
+        </svg>
+        <div class="chart-tooltip" data-chart-tooltip-target="tooltip" hidden></div>
+      </div>
+    <% else %>
+      <p class="py-12 text-center text-sm text-body">Il faut plus de jours avec poids + pas pour calculer une corrélation.</p>
+    <% end %>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+      <p class="text-sm text-body">Coefficient de corrélation</p>
+      <% if corr %>
+        <p class="mt-1 text-3xl font-bold <%= corr[:r] <= 0 ? 'text-success' : 'text-danger' %>">
+          <span data-controller="counter" data-counter-end-value="<%= corr[:r] %>" data-counter-decimals-value="2"><%= number_with_precision(corr[:r], precision: 2) %></span>
+        </p>
+        <p class="mt-1 text-sm font-medium text-boxdark">Corrélation <%= corr[:strength] %></p>
+        <p class="mt-1 text-xs text-body"><%= corr[:direction] %> (sur <%= corr[:sample] %> jours).</p>
+      <% else %>
+        <p class="mt-2 text-sm text-body">Données insuffisantes pour l'instant.</p>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="rounded-lg border border-stroke bg-white p-4 text-center shadow-default">
+        <p class="text-2xl font-bold text-primary" data-controller="counter" data-counter-end-value="<%= @insights.active_days %>"><%= @insights.active_days %></p>
+        <p class="text-xs text-body">jours actifs</p>
+      </div>
+      <div class="rounded-lg border border-stroke bg-white p-4 text-center shadow-default">
+        <p class="text-2xl font-bold text-primary" data-controller="counter" data-counter-end-value="<%= @insights.logging_streak %>"><%= @insights.logging_streak %></p>
+        <p class="text-xs text-body">jours de streak</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%# ============ Today's tasks preview ============ %>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <h2 class="text-lg font-semibold text-boxdark">Ta journée</h2>
+    <%= link_to "Tout voir →", today_path, class: "text-sm font-medium text-primary hover:underline" %>
+  </div>
+  <ul class="divide-y divide-stroke">
+    <% if @tasks_today.empty? %>
+      <li class="px-6 py-8 text-center text-sm text-body">Aucune tâche aujourd'hui. <%= link_to "En ajouter", today_path, class: "text-primary hover:underline" %>.</li>
+    <% else %>
+      <% @tasks_today.each do |t| %>
+        <li class="flex items-center gap-3 px-6 py-3">
+          <span class="flex h-5 w-5 items-center justify-center rounded-md border <%= t.done? ? 'border-success bg-success text-white' : 'border-stroke' %>">
+            <% if t.done? %><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><% end %>
+          </span>
+          <span class="text-sm <%= t.done? ? 'text-body line-through' : 'text-boxdark' %>"><%= t.title %></span>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>

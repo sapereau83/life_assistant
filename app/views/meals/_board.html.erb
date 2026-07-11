@@ -41,13 +41,11 @@
           <th class="px-4 py-3"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-stroke">
-        <% if meals.empty? %>
-          <tr><td colspan="6" class="px-6 py-10 text-center text-body">Aucun repas noté pour le moment.</td></tr>
-        <% else %>
-          <%= render partial: "meals/entry", collection: meals, as: :meal %>
-        <% end %>
-      </tbody>
+      <% if meals.empty? %>
+        <tbody><tr><td colspan="6" class="px-6 py-10 text-center text-body">Aucun repas noté pour le moment.</td></tr></tbody>
+      <% else %>
+        <%= render partial: "meals/entry", collection: meals, as: :meal %>
+      <% end %>
     </table>
   </div>
 </div>

@@ -33,9 +33,14 @@
               </h1>
               <p class="text-sm text-body"><%= content_for(:page_subtitle) %></p>
             </div>
-            <div class="hidden text-right sm:block">
-              <p class="text-sm font-medium text-boxdark"><%= l(Date.current, format: :long) %></p>
-              <p class="text-xs text-body">Semaine <%= Date.current.cweek %></p>
+            <div class="hidden items-center gap-4 sm:flex">
+              <div class="text-right">
+                <p class="text-sm font-medium text-boxdark"><%= l(Date.current, format: :long) %></p>
+                <p class="text-xs text-body">Semaine <%= Date.current.cweek %></p>
+              </div>
+              <div class="rounded-lg bg-gray-2 px-3 py-1.5 text-right">
+                <p class="font-mono text-lg font-semibold tabular-nums text-primary" data-controller="clock"><%= l(Time.current, format: "%H:%M:%S") %></p>
+              </div>
             </div>
           </div>
         </header>
