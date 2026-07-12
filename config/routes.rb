@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Solid Queue monitoring dashboard. Dev-only (gem is in the :development
+  # group) and ships without auth — if you ever mount it in production, wrap
+  # it in an authenticated constraint. The `defined?` guard keeps route
+  # reloading safe in processes that don't load the gem (e.g. bin/jobs).
+  mount SolidQueueDashboard::Engine, at: "/solid-queue" if defined?(SolidQueueDashboard::Engine)
+
   resources :tasks, only: %i[create update destroy] do
     member do
       patch :complete

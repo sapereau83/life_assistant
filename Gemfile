@@ -54,6 +54,10 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Web UI to monitor Solid Queue background jobs (mounted at /solid-queue).
+  # Dev-only: it has no built-in auth, so it's not exposed in production.
+  gem "solid_queue_dashboard", "~> 0.2.0"
 end
 
 group :test do
