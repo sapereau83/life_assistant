@@ -17,7 +17,8 @@ class TasksController < ApplicationController
     @task = Task.new(task_params)
 
     if @task.save
-      @task = Task.new # reset the add form
+      @highlight_task_id = @task.id # the freshly added item animates in
+      @task = Task.new # reset the add form (clears the input on re-render)
       render_board
     else
       # keep the typed title so the user can fix it
