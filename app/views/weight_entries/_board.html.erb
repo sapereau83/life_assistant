@@ -2,11 +2,15 @@
   current = entries.first
   oldest  = entries.last
   total_delta = (current && oldest) ? (current.weight_kg - oldest.weight_kg) : nil
-  chart = weight_chart(entries.to_a.reverse)
+  ideal = WeightEntry.ideal_weight
+  low, high = WeightEntry.healthy_range
+  current_bmi = current&.bmi
+  to_target = current ? (current.weight_kg - ideal) : nil
+  chart = weight_chart(entries.to_a.reverse, target: ideal)
 %>
 
 <%# ---- Stat tiles ---- %>
-<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
   <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
     <p class="text-sm text-body">Poids actuel</p>
     <p class="mt-1 text-2xl font-bold text-boxdark">
@@ -18,6 +22,20 @@
   </div>
 
   <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
+    <p class="text-sm text-body">BMI actuel</p>
+    <p class="mt-1 text-2xl font-bold <%= current_bmi.nil? ? 'text-boxdark' : (WeightEntry::HEALTHY_BMI.cover?(current_bmi) ? 'text-success' : 'text-warning') %>">
+      <%= current_bmi ? number_with_precision(current_bmi, precision: 1) : "—" %>
+    </p>
+    <p class="text-xs text-body">
+      <% if current_bmi.nil? %>—
+      <% elsif current_bmi > WeightEntry::HEALTHY_BMI.end %>surpoids · cible <%= WeightEntry::IDEAL_BMI %>
+      <% elsif current_bmi < WeightEntry::HEALTHY_BMI.begin %>maigreur · cible <%= WeightEntry::IDEAL_BMI %>
+      <% else %>dans la plage saine ✓
+      <% end %>
+    </p>
+  </div>
+
+  <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
     <p class="text-sm text-body">Évolution totale</p>
     <p class="mt-1 text-2xl font-bold <%= total_delta.to_f <= 0 ? 'text-success' : 'text-danger' %>">
       <%= total_delta ? "#{total_delta > 0 ? '+' : ''}#{number_with_precision(total_delta, precision: 1)} kg" : "—" %>
@@ -26,9 +44,15 @@
   </div>
 
   <div class="rounded-lg border border-stroke bg-white p-5 shadow-default">
-    <p class="text-sm text-body">Pesées enregistrées</p>
-    <p class="mt-1 text-2xl font-bold text-boxdark"><%= entries.size %></p>
-    <p class="text-xs text-body">jours suivis</p>
+    <p class="text-sm text-body">Objectif (BMI <%= WeightEntry::IDEAL_BMI %>)</p>
+    <p class="mt-1 text-2xl font-bold text-success"><%= number_with_precision(ideal, precision: 1) %> kg</p>
+    <p class="text-xs text-body">
+      <% if to_target.nil? %>plage saine <%= number_with_precision(low, precision: 1) %>–<%= number_with_precision(high, precision: 1) %> kg
+      <% elsif to_target > 0.05 %>encore −<%= number_with_precision(to_target, precision: 1) %> kg
+      <% elsif to_target < -0.05 %>+<%= number_with_precision(to_target.abs, precision: 1) %> kg sous la cible
+      <% else %>objectif atteint 🎯
+      <% end %>
+    </p>
   </div>
 </div>
 
@@ -48,6 +72,12 @@
       <polyline points="<%= chart[:line] %>" fill="none" stroke="#3c50e0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
       <% chart[:coords].each do |c| %>
         <circle cx="<%= c[:x] %>" cy="<%= c[:y] %>" r="2.5" fill="#3c50e0" />
+      <% end %>
+      <% if chart[:target_y] %>
+        <line x1="<%= chart[:pad] %>" y1="<%= chart[:target_y] %>" x2="<%= chart[:width] - chart[:pad] %>" y2="<%= chart[:target_y] %>" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 4" />
+        <text x="<%= chart[:width] - chart[:pad] %>" y="<%= chart[:target_y] - 6 %>" text-anchor="end" font-size="11" fill="#10b981">
+          Cible BMI <%= WeightEntry::IDEAL_BMI %> · <%= number_with_precision(chart[:target], precision: 1) %> kg
+        </text>
       <% end %>
     </svg>
   <% else %>

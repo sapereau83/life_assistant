@@ -6,7 +6,7 @@
   total_change = @insights.total_weight_change
   corr = @insights.correlation_insight
   today_steps = @workout_today&.steps
-  weight_chart = weight_chart(@weight_series.to_a)
+  weight_chart = weight_chart(@weight_series.to_a, target: WeightEntry.ideal_weight)
   steps_chart = steps_chart(@steps_series.map { |w| [ w.recorded_on, w.steps ] })
   scatter = scatter_chart(@insights.scatter)
 %>
@@ -101,6 +101,10 @@
             <circle class="chart-hit" cx="<%= c[:x] %>" cy="<%= c[:y] %>" r="9" fill="transparent"
               data-action="mouseenter->chart-tooltip#show mouseleave->chart-tooltip#hide"
               data-label="<%= l(c[:date], format: :short) %> · <%= number_with_precision(c[:kg], precision: 1) %> kg" />
+          <% end %>
+          <% if weight_chart[:target_y] %>
+            <line x1="<%= weight_chart[:pad] %>" y1="<%= weight_chart[:target_y] %>" x2="<%= weight_chart[:width] - weight_chart[:pad] %>" y2="<%= weight_chart[:target_y] %>" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 4" />
+            <text x="<%= weight_chart[:width] - weight_chart[:pad] %>" y="<%= weight_chart[:target_y] - 6 %>" text-anchor="end" font-size="11" fill="#10b981">cible <%= number_with_precision(weight_chart[:target], precision: 1) %> kg</text>
           <% end %>
         </svg>
         <div class="chart-tooltip" data-chart-tooltip-target="tooltip" hidden></div>
