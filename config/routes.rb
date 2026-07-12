@@ -6,8 +6,10 @@ Rails.application.routes.draw do
       patch :complete
       patch :reopen
       patch :move_to_today
+      patch :toggle_recurring
     end
   end
+  resources :recurring_tasks, only: %i[create destroy]
   get "today" => "tasks#index", as: :today
   get "todos" => "tasks#list", as: :todos
   get "dashboard" => "dashboard#index", as: :dashboard

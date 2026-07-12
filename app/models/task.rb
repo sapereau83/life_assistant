@@ -4,8 +4,12 @@ class Task < ApplicationRecord
   # to_validate  -> rolled over at midnight, waiting in the "à valider" bucket
   enum :state, { todo: 0, done: 1, to_validate: 2 }
 
+  belongs_to :recurring_task, optional: true
+
   validates :title, presence: true
   validates :day, presence: true
+
+  def recurring? = recurring_task_id.present?
 
   before_validation :set_defaults, on: :create
 

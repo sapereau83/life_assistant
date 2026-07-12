@@ -1,5 +1,7 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: %i[update destroy complete reopen move_to_today]
+  include TaskBoard
+
+  before_action :set_task, only: %i[update destroy complete reopen move_to_today toggle_recurring]
 
   # "Aujourd'hui" board: today's list + the "à valider" bucket.
   def index
@@ -19,11 +21,7 @@ class TasksController < ApplicationController
       render_board
     else
       # keep the typed title so the user can fix it
-      load_board
-      respond_to do |format|
-        format.turbo_stream { render :board, status: :unprocessable_entity }
-        format.html { redirect_back fallback_location: root_path, alert: @task.errors.full_messages.to_sentence }
-      end
+      render_board(status: :unprocessable_entity)
     end
   end
 
@@ -47,6 +45,17 @@ class TasksController < ApplicationController
     render_board
   end
 
+  # Turn a one-off task into a daily recurring one (or stop it recurring).
+  def toggle_recurring
+    if @task.recurring_task
+      @task.recurring_task.destroy # nullifies recurring_task_id on its tasks
+    else
+      rt = RecurringTask.create!(title: @task.title, last_added_on: Date.current)
+      @task.update!(recurring_task: rt)
+    end
+    render_board
+  end
+
   def destroy
     @task.destroy
     render_board
@@ -60,22 +69,5 @@ class TasksController < ApplicationController
 
   def task_params
     params.require(:task).permit(:title)
-  end
-
-  def load_board
-    @today_tasks = Task.for_day(Date.current).where(state: %i[todo done]).ordered
-    @bucket = Task.bucket
-    # Flat "Mes tâches" list: everything still open, plus today's done items.
-    @list_active = Task.where(state: %i[todo to_validate]).order(day: :asc, position: :asc)
-    @list_done = Task.done.for_day(Date.current).ordered
-    @task ||= Task.new
-  end
-
-  def render_board
-    load_board
-    respond_to do |format|
-      format.turbo_stream { render :board }
-      format.html { redirect_back fallback_location: root_path }
-    end
   end
 end

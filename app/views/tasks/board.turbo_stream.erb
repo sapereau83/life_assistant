@@ -1,18 +1,26 @@
+<%# Rendered from both TasksController and RecurringTasksController, so every
+    partial is referenced with an explicit "tasks/" path. Streams that target
+    an element absent from the current page are simply ignored by Turbo. %>
 <%= turbo_stream.replace "today_card" do %>
   <div id="today_card">
-    <%= render "today_card", today_tasks: @today_tasks, task: @task %>
+    <%= render "tasks/today_card", today_tasks: @today_tasks, task: @task %>
   </div>
 <% end %>
 
 <%= turbo_stream.replace "bucket_card" do %>
   <div id="bucket_card">
-    <%= render "bucket_card", bucket: @bucket %>
+    <%= render "tasks/bucket_card", bucket: @bucket %>
   </div>
 <% end %>
 
-<%# Also refresh the simple "Mes tâches" list. Ignored on pages without it. %>
 <%= turbo_stream.replace "todo_list" do %>
   <div id="todo_list">
-    <%= render "todo_list", list_active: @list_active, list_done: @list_done, task: @task %>
+    <%= render "tasks/todo_list", list_active: @list_active, list_done: @list_done, task: @task %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "recurring_list" do %>
+  <div id="recurring_list">
+    <%= render "tasks/recurring_list", recurring: @recurring %>
   </div>
 <% end %>
