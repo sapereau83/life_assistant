@@ -39,7 +39,10 @@ class MealsController < ApplicationController
   end
 
   def meal_params
-    params.require(:meal).permit(:recorded_on, :breakfast, :lunch, :dinner, :snacks)
+    params.require(:meal).permit(
+      :recorded_on, :breakfast, :lunch, :dinner, :snacks,
+      :breakfast_skipped, :lunch_skipped, :dinner_skipped, :snacks_skipped
+    )
   end
 
   def load_board(keep_record: false)

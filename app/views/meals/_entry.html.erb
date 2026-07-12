@@ -3,8 +3,14 @@
     <td class="whitespace-nowrap px-4 py-3 font-medium"><%= l(meal.recorded_on, format: :long) %></td>
     <% Meal::MEALS.each do |m| %>
       <td class="px-4 py-3">
-        <% if meal[m].present? %>
-          <span class="whitespace-pre-line text-body"><%= meal[m] %></span>
+        <% if meal.skipped?(m) %>
+          <span class="inline-flex rounded-full bg-body/10 px-2 py-0.5 text-xs font-medium text-body">sauté</span>
+        <% elsif meal.items(m).any? %>
+          <ul class="list-disc space-y-0.5 pl-4 text-body">
+            <% meal.items(m).each do |line| %>
+              <li><%= line %></li>
+            <% end %>
+          </ul>
         <% else %>
           <span class="text-body/40">—</span>
         <% end %>
@@ -28,9 +34,16 @@
         <p class="mb-2 text-xs font-medium text-body"><%= l(meal.recorded_on, format: :long) %></p>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <% { breakfast: "Petit-déj", lunch: "Déjeuner", dinner: "Dîner", snacks: "Snacks" }.each do |field, label| %>
-            <div>
-              <label class="mb-1 block text-xs font-medium text-body"><%= label %></label>
+            <div data-controller="meal-skip">
+              <div class="mb-1 flex items-center justify-between">
+                <label class="text-xs font-medium text-body"><%= label %></label>
+                <label class="flex cursor-pointer items-center gap-1 text-xs text-body">
+                  <%= f.check_box "#{field}_skipped", data: { meal_skip_target: "checkbox", action: "meal-skip#toggle" }, class: "h-3.5 w-3.5 rounded border-stroke text-primary focus:ring-primary" %>
+                  Sauté
+                </label>
+              </div>
               <%= f.text_area field, rows: 3,
+                    data: { meal_skip_target: "field" },
                     class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
             </div>
           <% end %>

@@ -10,9 +10,16 @@
     </div>
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <% { breakfast: "Petit-déj", lunch: "Déjeuner", dinner: "Dîner", snacks: "Snacks" }.each do |field, label| %>
-        <div>
-          <label class="mb-1 block text-xs font-medium text-body"><%= label %></label>
+        <div data-controller="meal-skip">
+          <div class="mb-1 flex items-center justify-between">
+            <label class="text-xs font-medium text-body"><%= label %></label>
+            <label class="flex cursor-pointer items-center gap-1 text-xs text-body">
+              <%= f.check_box "#{field}_skipped", data: { meal_skip_target: "checkbox", action: "meal-skip#toggle" }, class: "h-3.5 w-3.5 rounded border-stroke text-primary focus:ring-primary" %>
+              Sauté
+            </label>
+          </div>
           <%= f.text_area field, rows: 3, placeholder: "un item par ligne…",
+                data: { meal_skip_target: "field" },
                 class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
         </div>
       <% end %>

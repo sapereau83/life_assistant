@@ -121,7 +121,17 @@ end
 
 meal_history.each do |date, (b, l, di, s)|
   m = Meal.find_or_initialize_by(recorded_on: Date.parse(date))
-  m.update!(breakfast: b.presence, lunch: l.presence, dinner: di.presence, snacks: s.presence)
+  attrs = {}
+  { breakfast: b, lunch: l, dinner: di, snacks: s }.each do |field, val|
+    if val.to_s.strip.casecmp("skipped").zero?
+      attrs[field] = nil
+      attrs["#{field}_skipped"] = true
+    else
+      attrs[field] = val.presence
+      attrs["#{field}_skipped"] = false
+    end
+  end
+  m.update!(attrs)
 end
 puts "Seeded #{Meal.count} meal days."
 
