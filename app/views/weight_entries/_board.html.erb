@@ -60,7 +60,7 @@
 <div class="mb-6 rounded-lg border border-stroke bg-white p-5 shadow-default">
   <h2 class="mb-4 text-lg font-semibold text-boxdark">Courbe de poids</h2>
   <% if chart %>
-    <svg viewBox="0 0 <%= chart[:width] %> <%= chart[:height] %>" class="h-56 w-full" preserveAspectRatio="none" role="img" aria-label="Courbe d'évolution du poids">
+    <svg viewBox="0 0 <%= chart[:width] %> <%= chart[:height] %>" class="w-full aspect-[720/220]" role="img" aria-label="Courbe d'évolution du poids">
       <% [0.0, 0.5, 1.0].each do |r| %>
         <% y = chart[:pad] + (chart[:height] - chart[:pad] * 2) * r %>
         <line x1="<%= chart[:pad] %>" y1="<%= y %>" x2="<%= chart[:width] - chart[:pad] %>" y2="<%= y %>" stroke="#e2e8f0" stroke-width="1" />
