@@ -8,3 +8,10 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Rails wraps invalid fields in <div class="field_with_errors">. `display:
+   contents` removes that wrapper from layout so the field keeps its own sizing
+   (e.g. `w-full` inside a flex row) instead of shrinking to content width. */
+.field_with_errors {
+  display: contents;
+}
