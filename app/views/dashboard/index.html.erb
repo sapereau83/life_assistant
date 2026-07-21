@@ -11,6 +11,9 @@
   scatter = scatter_chart(@insights.scatter)
 %>
 
+<%# ============ Daily summary hero ============ %>
+<%= render "daily_summary", summary: @summary %>
+
 <%# ============ Snapshot tiles ============ %>
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
   <%# Tasks %>

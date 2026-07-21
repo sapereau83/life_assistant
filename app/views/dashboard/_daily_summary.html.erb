@@ -1,0 +1,54 @@
+<%# Hero card: today's completeness across the four trackers. %>
+<div class="mb-6 rounded-lg border border-stroke bg-white p-5 shadow-default sm:p-6">
+  <div class="flex flex-col gap-5 lg:flex-row lg:items-center">
+    <%# ---- Completeness score ---- %>
+    <div class="flex items-center gap-4 lg:w-64 lg:shrink-0 lg:flex-col lg:items-start lg:border-r lg:border-stroke lg:pr-6">
+      <div class="flex items-center gap-2">
+        <h2 class="text-lg font-semibold text-boxdark">Ma journée</h2>
+        <% if summary.complete? %>
+          <span class="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">Complète 🎉</span>
+        <% end %>
+      </div>
+      <div class="ml-auto lg:ml-0 lg:mt-2 lg:w-full">
+        <p class="text-3xl font-bold text-boxdark">
+          <span data-controller="counter" data-counter-end-value="<%= summary.done_count %>"><%= summary.done_count %></span>
+          <span class="text-xl text-body">/ <%= summary.total %> suivis</span>
+        </p>
+        <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-2 lg:w-full" style="min-width: 8rem">
+          <div class="h-full rounded-full bg-primary transition-all" style="width: <%= summary.percent %>%"></div>
+        </div>
+      </div>
+    </div>
+
+    <%# ---- Per-tracker rows ---- %>
+    <div class="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+      <% summary.items.each do |item| %>
+        <%= link_to send("#{item.path_name}_path"),
+              class: "flex items-center gap-3 rounded-lg border px-4 py-3 transition hover:border-primary #{item.done ? 'border-success/40 bg-success/5' : 'border-stroke bg-white'}" do %>
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg <%= item.done ? 'bg-success/10' : 'bg-gray-2' %>">
+            <%= item.icon %>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-boxdark"><%= item.label %></p>
+            <p class="truncate text-xs text-body"><%= item.detail %></p>
+          </div>
+          <% if item.done %>
+            <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success text-white">
+              <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </span>
+          <% else %>
+            <span class="h-5 w-5 shrink-0 rounded-full border-2 border-stroke"></span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ---- Reminder of what's left ---- %>
+  <% if summary.pending.any? %>
+    <div class="mt-4 border-t border-stroke pt-3 text-sm text-body">
+      À saisir aujourd'hui :
+      <% summary.pending.each_with_index do |item, i| %><%= link_to item.label, send("#{item.path_name}_path"), class: "font-medium text-primary hover:underline" %><%= i < summary.pending.size - 1 ? ", " : "" %><% end %>
+    </div>
+  <% end %>
+</div>
