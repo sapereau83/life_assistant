@@ -11,8 +11,9 @@
 
   <ul class="divide-y divide-stroke">
     <% if bucket.empty? %>
-      <li class="px-6 py-10 text-center text-sm text-body">
-        Rien à valider 🎉 Tu es à jour.
+      <li class="flex flex-col items-center gap-2 px-6 py-10 text-center text-sm text-body">
+        <%= ui_icon :check, css: "h-6 w-6 text-success" %>
+        Rien à valider. Tu es à jour.
       </li>
     <% else %>
       <%= render partial: "tasks/bucket_task", collection: bucket, as: :task %>

@@ -14,8 +14,9 @@
         </span>
       <% end %>
     </div>
-    <span class="text-sm text-body">
-      <%= today_weight ? "Pesée enregistrée aujourd'hui ✓" : "Pas encore pesé aujourd'hui" %>
+    <span class="flex items-center gap-1 text-sm text-body">
+      <% if today_weight %><%= ui_icon :check, css: "h-4 w-4 text-success" %><% end %>
+      <%= today_weight ? "Pesée enregistrée aujourd'hui" : "Pas encore pesé aujourd'hui" %>
     </span>
   </div>
 

@@ -113,10 +113,10 @@ class Insights
   # this calendar week, so the dashboard can show one tile per tracker.
   def streaks
     [
-      { key: :weight,  label: "Poids",  icon: "⚖️", current: current_streak(weight_dates),  week: week_count(weight_dates) },
-      { key: :meals,   label: "Repas",  icon: "🍽️", current: current_streak(meal_dates),    week: week_count(meal_dates) },
-      { key: :workout, label: "Sport",  icon: "🏃", current: current_streak(workout_dates), week: week_count(workout_dates) },
-      { key: :tasks,   label: "Tâches", icon: "✓",  current: current_streak(task_dates),    week: week_count(task_dates) }
+      { key: :weight,  label: "Poids",  icon: :weight,  current: current_streak(weight_dates),  week: week_count(weight_dates) },
+      { key: :meals,   label: "Repas",  icon: :meals,   current: current_streak(meal_dates),    week: week_count(meal_dates) },
+      { key: :workout, label: "Sport",  icon: :workout, current: current_streak(workout_dates), week: week_count(workout_dates) },
+      { key: :tasks,   label: "Tâches", icon: :tasks,   current: current_streak(task_dates),    week: week_count(task_dates) }
     ]
   end
 

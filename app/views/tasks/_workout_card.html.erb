@@ -1,0 +1,25 @@
+<%
+  # On a failed submit @workout carries the typed content + errors; otherwise
+  # load today's row so re-saving updates the same day.
+  workout = (@workout && @workout.errors.any?) ? @workout : Workout.find_or_initialize_by(recorded_on: Date.current)
+  today_workout = Workout.find_by(recorded_on: Date.current)
+%>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-boxdark">Mon sport</h2>
+      <% if today_workout&.active? %>
+        <span class="flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
+          <%= ui_icon :check, css: "h-3.5 w-3.5" %> Activité notée
+        </span>
+      <% end %>
+    </div>
+    <span class="text-sm text-body">
+      <%= today_workout&.active? ? "Séance enregistrée aujourd'hui" : "Pas d'activité notée aujourd'hui" %>
+    </span>
+  </div>
+
+  <div class="px-6 py-4">
+    <%= render "workouts/form", workout: workout %>
+  </div>
+</div>

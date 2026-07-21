@@ -30,7 +30,7 @@
       <% if current_bmi.nil? %>—
       <% elsif current_bmi > WeightEntry::HEALTHY_BMI.end %>surpoids · cible <%= WeightEntry::IDEAL_BMI %>
       <% elsif current_bmi < WeightEntry::HEALTHY_BMI.begin %>maigreur · cible <%= WeightEntry::IDEAL_BMI %>
-      <% else %>dans la plage saine ✓
+      <% else %>dans la plage saine
       <% end %>
     </p>
   </div>
@@ -50,7 +50,7 @@
       <% if to_target.nil? %>plage saine <%= number_with_precision(low, precision: 1) %>–<%= number_with_precision(high, precision: 1) %> kg
       <% elsif to_target > 0.05 %>encore −<%= number_with_precision(to_target, precision: 1) %> kg
       <% elsif to_target < -0.05 %>+<%= number_with_precision(to_target.abs, precision: 1) %> kg sous la cible
-      <% else %>objectif atteint 🎯
+      <% else %>objectif atteint
       <% end %>
     </p>
   </div>

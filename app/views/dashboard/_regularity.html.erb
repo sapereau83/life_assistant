@@ -5,18 +5,19 @@
       <h2 class="text-lg font-semibold text-boxdark">Régularité</h2>
       <p class="text-sm text-body">Tes séries en cours, tracker par tracker.</p>
     </div>
-    <span class="rounded-full bg-warning/10 px-3 py-1 text-xs font-medium text-warning">
-      record 🔥 <%= insights.best_logging_streak %> j
+    <span class="flex items-center gap-1 rounded-full bg-warning/10 px-3 py-1 text-xs font-medium text-warning">
+      <%= ui_icon :streak, css: "h-3.5 w-3.5" %> record <%= insights.best_logging_streak %> j
     </span>
   </div>
 
   <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
     <% insights.streaks.each do |s| %>
       <div class="rounded-lg border border-stroke bg-white p-4 text-center shadow-default">
-        <div class="text-2xl leading-none"><%= s[:icon] %></div>
-        <p class="mt-2 text-2xl font-bold text-boxdark">
+        <div class="flex justify-center text-body"><%= ui_icon s[:icon], css: "h-6 w-6" %></div>
+        <p class="mt-2 flex items-center justify-center gap-1 text-2xl font-bold text-boxdark">
           <% if s[:current].positive? %>
-            🔥 <%= s[:current] %> <span class="text-sm font-medium text-body">j</span>
+            <span class="text-warning"><%= ui_icon :streak, css: "h-5 w-5" %></span>
+            <%= s[:current] %> <span class="text-sm font-medium text-body">j</span>
           <% else %>
             <span class="text-body">—</span>
           <% end %>

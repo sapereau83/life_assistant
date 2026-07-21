@@ -22,7 +22,7 @@
   <ul class="divide-y divide-stroke">
     <% if recurring.empty? %>
       <li class="px-6 py-8 text-center text-sm text-body">
-        Aucune tâche quotidienne. Ajoute-en une, ou clique l'icône <span class="inline-block align-middle">🔁</span> sur une tâche pour la répéter chaque jour.
+        Aucune tâche quotidienne. Ajoute-en une, ou clique l'icône <span class="inline-flex align-middle text-primary"><%= ui_icon :repeat, css: "h-4 w-4" %></span> sur une tâche pour la répéter chaque jour.
       </li>
     <% else %>
       <% recurring.each do |rt| %>

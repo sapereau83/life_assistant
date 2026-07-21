@@ -13,7 +13,7 @@
   <ul class="divide-y divide-stroke">
     <% if today_tasks.empty? %>
       <li class="px-6 py-10 text-center text-sm text-body">
-        Rien pour aujourd'hui. Ajoute ta première tâche ci-dessous 👇
+        Rien pour aujourd'hui. Ajoute ta première tâche ci-dessous.
       </li>
     <% else %>
       <%= render partial: "tasks/task", collection: today_tasks, as: :task %>

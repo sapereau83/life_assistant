@@ -19,7 +19,7 @@ class GoalProgress
     target = @goal.effective_target_weight
     latest = WeightEntry.recent_first.first
     if latest.nil?
-      return Item.new(key: :weight, label: "Poids cible", icon: "⚖️",
+      return Item.new(key: :weight, label: "Poids cible", icon: :weight,
                       detail: "Cible #{fmt(target)} kg", percent: 0, on_track: false,
                       nudge: "Ajoute une pesée pour suivre cet objectif.", path_name: :weight_entries)
     end
@@ -32,10 +32,10 @@ class GoalProgress
     on_track  = remaining.abs <= 0.5
 
     detail = "#{fmt(current)} → cible #{fmt(target)} kg" +
-             (on_track ? " · atteint 🎯" : " · reste #{fmt(remaining.abs)} kg")
+             (on_track ? " · atteint" : " · reste #{fmt(remaining.abs)} kg")
     nudge = on_track ? nil : (remaining > 0 ? "Encore #{fmt(remaining.abs)} kg à perdre." : "#{fmt(remaining.abs)} kg sous la cible.")
 
-    Item.new(key: :weight, label: "Poids cible", icon: "⚖️", detail: detail,
+    Item.new(key: :weight, label: "Poids cible", icon: :weight, detail: detail,
              percent: percent, on_track: on_track, nudge: nudge, path_name: :weight_entries)
   end
 
@@ -48,7 +48,7 @@ class GoalProgress
     on_track = done >= target
     missing  = target - done
 
-    Item.new(key: :workouts, label: "Sport / semaine", icon: "🏃",
+    Item.new(key: :workouts, label: "Sport / semaine", icon: :workout,
              detail: "#{done} / #{target} séances cette semaine", percent: percent, on_track: on_track,
              nudge: on_track ? nil : "Encore #{missing} séance#{'s' if missing > 1} d'ici dimanche.",
              path_name: :workouts)
@@ -63,8 +63,8 @@ class GoalProgress
     elapsed      = (@today - @today.beginning_of_week).to_i + 1
     percent      = ((days.to_f / elapsed) * 100).clamp(0, 100).round
 
-    detail = (logged_today ? "Noté aujourd'hui ✓" : "Pas encore noté") + " · #{days}/#{elapsed} j cette semaine"
-    Item.new(key: :meals, label: "Repas quotidiens", icon: "🍽️", detail: detail,
+    detail = (logged_today ? "Noté aujourd'hui" : "Pas encore noté") + " · #{days}/#{elapsed} j cette semaine"
+    Item.new(key: :meals, label: "Repas quotidiens", icon: :meals, detail: detail,
              percent: percent, on_track: logged_today,
              nudge: logged_today ? nil : "Note tes repas du jour.", path_name: :meals)
   end
@@ -78,7 +78,7 @@ class GoalProgress
     on_track = steps >= target
     missing  = target - steps
 
-    Item.new(key: :steps, label: "Pas / jour", icon: "👟",
+    Item.new(key: :steps, label: "Pas / jour", icon: :steps,
              detail: "#{delim(steps)} / #{delim(target)} pas aujourd'hui", percent: percent, on_track: on_track,
              nudge: on_track ? nil : "Encore #{delim(missing)} pas aujourd'hui.", path_name: :workouts)
   end

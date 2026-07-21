@@ -13,10 +13,12 @@
       <%= link_to send("#{it.path_name}_path"), class: "block rounded-lg p-2 -m-2 transition hover:bg-gray-2/60" do %>
         <div class="mb-1.5 flex items-center justify-between gap-3">
           <div class="flex min-w-0 items-center gap-2">
-            <span class="text-lg leading-none"><%= it.icon %></span>
+            <span class="text-body"><%= ui_icon it.icon %></span>
             <span class="text-sm font-medium text-boxdark"><%= it.label %></span>
             <% if it.on_track %>
-              <span class="rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">OK ✓</span>
+              <span class="flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+                <%= ui_icon :check, css: "h-3.5 w-3.5" %> OK
+              </span>
             <% end %>
           </div>
           <span class="shrink-0 text-xs text-body"><%= it.detail %></span>
@@ -25,7 +27,9 @@
           <div class="h-full rounded-full <%= it.on_track ? 'bg-success' : 'bg-primary' %> transition-all" style="width: <%= it.percent %>%"></div>
         </div>
         <% if it.nudge %>
-          <p class="mt-1 text-xs font-medium text-warning">💡 <%= it.nudge %></p>
+          <p class="mt-1 flex items-center gap-1 text-xs font-medium text-warning">
+            <%= ui_icon :nudge, css: "h-3.5 w-3.5" %> <%= it.nudge %>
+          </p>
         <% end %>
       <% end %>
     <% end %>
