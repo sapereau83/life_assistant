@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_12_123012) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_084930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "goals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "daily_steps"
+    t.boolean "log_meals_daily", default: true, null: false
+    t.decimal "target_weight_kg", precision: 5, scale: 2
+    t.datetime "updated_at", null: false
+    t.integer "weekly_workouts", default: 3, null: false
+  end
 
   create_table "meals", force: :cascade do |t|
     t.text "breakfast"

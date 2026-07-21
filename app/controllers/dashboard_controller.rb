@@ -2,6 +2,7 @@ class DashboardController < ApplicationController
   def index
     @insights = Insights.new
     @summary  = DailySummary.new
+    @goals    = GoalProgress.new
 
     # Today snapshot across the four trackers
     @tasks_today   = Task.for_day(Date.current).where(state: %i[todo done]).ordered

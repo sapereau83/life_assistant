@@ -1,0 +1,47 @@
+<% content_for :title, "Objectifs · Life Assistant" %>
+<% content_for :page_title, "Objectifs" %>
+<% content_for :page_subtitle, "Définis tes cibles ; le tableau de bord suit ta progression." %>
+
+<div class="max-w-2xl pb-24 lg:pb-6">
+  <div class="rounded-lg border border-stroke bg-white p-6 shadow-default">
+    <%= form_with model: @goal, url: goal_path, method: :patch do |f| %>
+      <% if @goal.errors.any? %>
+        <p class="mb-4 rounded-lg bg-danger/10 px-4 py-2 text-sm text-danger"><%= @goal.errors.full_messages.to_sentence %></p>
+      <% end %>
+
+      <div class="space-y-5">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-boxdark">Poids cible (kg)</label>
+          <%= f.number_field :target_weight_kg, step: 0.1, min: 0, placeholder: "ex. 75.0",
+                class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+          <p class="mt-1 text-xs text-body">Laisse vide pour viser le poids idéal calculé (BMI <%= WeightEntry::IDEAL_BMI %> · <%= number_with_precision(WeightEntry.ideal_weight, precision: 1) %> kg).</p>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium text-boxdark">Séances de sport par semaine</label>
+          <%= f.number_field :weekly_workouts, step: 1, min: 0,
+                class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+          <p class="mt-1 text-xs text-body">Nombre de jours actifs visés chaque semaine (0 pour ignorer).</p>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium text-boxdark">Pas par jour (optionnel)</label>
+          <%= f.number_field :daily_steps, step: 100, min: 0, placeholder: "ex. 10000",
+                class: "w-full rounded-lg border border-stroke bg-white px-3 py-2 text-sm text-boxdark outline-none focus:border-primary" %>
+          <p class="mt-1 text-xs text-body">Laisse vide pour ne pas suivre d'objectif de pas.</p>
+        </div>
+
+        <label class="flex cursor-pointer items-center gap-2 text-sm text-boxdark">
+          <%= f.check_box :log_meals_daily, class: "h-4 w-4 rounded border-stroke text-primary focus:ring-primary" %>
+          Noter mes repas chaque jour
+        </label>
+      </div>
+
+      <div class="mt-6 flex items-center gap-3">
+        <%= f.submit "Enregistrer",
+              class: "cursor-pointer rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition hover:bg-primary-dark" %>
+        <%= link_to "Annuler", dashboard_path, class: "text-sm font-medium text-body hover:text-boxdark" %>
+      </div>
+    <% end %>
+  </div>
+</div>

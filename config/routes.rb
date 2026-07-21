@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   resources :weight_entries, only: %i[index create update destroy]
   resources :meals, only: %i[index create update destroy]
   resources :workouts, only: %i[index create update destroy]
+  resource :goal, only: %i[edit update]
 
   # Defines the root path route ("/")
   root "dashboard#index"
