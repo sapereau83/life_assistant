@@ -1,0 +1,25 @@
+<%
+  # On a failed submit @entry carries the typed value + errors; otherwise show
+  # a blank quick-entry row (submitting today again updates the same day).
+  entry = (@entry && @entry.errors.any?) ? @entry : WeightEntry.new(recorded_on: Date.current)
+  today_weight = WeightEntry.find_by(recorded_on: Date.current)
+%>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-boxdark">Mon poids</h2>
+      <% if today_weight %>
+        <span class="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
+          <%= number_with_precision(today_weight.weight_kg, precision: 1) %> kg
+        </span>
+      <% end %>
+    </div>
+    <span class="text-sm text-body">
+      <%= today_weight ? "Pesée enregistrée aujourd'hui ✓" : "Pas encore pesé aujourd'hui" %>
+    </span>
+  </div>
+
+  <div class="px-6 py-4">
+    <%= render "weight_entries/form", entry: entry %>
+  </div>
+</div>

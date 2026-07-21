@@ -3,3 +3,11 @@
     <%= render "board", entries: @entries, entry: @entry %>
   </div>
 <% end %>
+
+<%# Keeps the "Aujourd'hui" quick-entry card in sync when it's on screen.
+    Ignored on the dedicated page, where this target is absent. %>
+<%= turbo_stream.replace "today_weight_card" do %>
+  <div id="today_weight_card">
+    <%= render "tasks/weight_card" %>
+  </div>
+<% end %>

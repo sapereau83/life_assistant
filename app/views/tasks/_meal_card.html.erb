@@ -1,0 +1,21 @@
+<%
+  # On a failed submit @meal carries the typed content + errors; otherwise load
+  # today's row (pre-fills what's already logged so adding to it stays easy).
+  meal = (@meal && @meal.errors.any?) ? @meal : Meal.find_or_initialize_by(recorded_on: Date.current)
+  logged = Meal::MEALS.count { |m| meal.skipped?(m) || meal.items(m).any? }
+%>
+<div class="rounded-lg border border-stroke bg-white shadow-default">
+  <div class="flex items-center justify-between border-b border-stroke px-6 py-4">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-boxdark">Mes repas</h2>
+      <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+        <%= logged %>/4 renseignés
+      </span>
+    </div>
+    <span class="text-sm text-body">Note ce que tu manges dans la journée</span>
+  </div>
+
+  <div class="px-6 py-4">
+    <%= render "meals/form", meal: meal %>
+  </div>
+</div>
