@@ -1,0 +1,25 @@
+<%# Nutrition <-> weight: average weight change on skipped vs. full days. %>
+<% n = insights.nutrition_insight %>
+<div class="mb-6 rounded-lg border border-stroke bg-white p-5 shadow-default sm:p-6">
+  <h2 class="mb-1 text-lg font-semibold text-boxdark">Repas ↔ poids</h2>
+  <p class="mb-4 text-sm text-body">Variation moyenne de ton poids d'une pesée à l'autre, selon que tu as sauté un repas ou non ce jour-là.</p>
+
+  <% if n %>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <% [ n[:full], n[:skipped] ].each do |split| %>
+        <div class="rounded-lg border border-stroke bg-white p-5 text-center shadow-default">
+          <p class="text-sm text-body"><%= split.label %></p>
+          <p class="mt-1 text-3xl font-bold <%= split.avg_delta <= 0 ? 'text-success' : 'text-danger' %>">
+            <%= split.avg_delta > 0 ? "+" : "" %><%= number_with_precision(split.avg_delta, precision: 2) %> kg
+          </p>
+          <p class="mt-1 text-xs text-body">moyenne sur <%= split.sample %> jour<%= "s" if split.sample > 1 %></p>
+        </div>
+      <% end %>
+    </div>
+    <p class="mt-4 rounded-lg bg-primary/5 px-4 py-3 text-sm font-medium text-boxdark"><%= n[:takeaway] %></p>
+  <% else %>
+    <p class="py-10 text-center text-sm text-body">
+      Il faut plus de jours avec un repas noté <span class="font-medium">et</span> une pesée pour comparer.
+    </p>
+  <% end %>
+</div>

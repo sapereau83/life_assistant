@@ -2,6 +2,7 @@
 # Not an ActiveRecord model — just reads from the four trackers.
 class Insights
   Scatter = Struct.new(:date, :steps, :delta, keyword_init: true)
+  NutritionSplit = Struct.new(:label, :sample, :avg_delta, keyword_init: true)
 
   def initialize(today: Date.current)
     @today = today
@@ -75,6 +76,32 @@ class Insights
     { r: r, strength: strength, direction: direction, sample: scatter.size }
   end
 
+  # ---- Nutrition <-> weight ----
+  # Compares day-over-day weight change on days where a meal was skipped vs.
+  # days where every logged meal was eaten. Only days that have both a logged
+  # meal and a weigh-in with a computable delta are considered.
+  def nutrition_insight
+    by_date = @weights.index_by(&:recorded_on)
+    paired = @meals.filter_map do |m|
+      next if m.blank_day?
+      weight = by_date[m.recorded_on]
+      next if weight.nil?
+      d = weight.delta
+      next if d.nil?
+      [ m, d.to_f ]
+    end
+    return nil if paired.size < 4 # too few days to say anything
+
+    skipped, full = paired.partition { |m, _| Meal::MEALS.any? { |meal| m.skipped?(meal) } }
+    return nil if skipped.empty? || full.empty?
+
+    skipped_split = nutrition_split("Jours avec un repas sauté", skipped)
+    full_split    = nutrition_split("Jours sans repas sauté", full)
+
+    { skipped: skipped_split, full: full_split, sample: paired.size,
+      takeaway: nutrition_takeaway(skipped_split.avg_delta - full_split.avg_delta) }
+  end
+
   # ---- Logging streak (consecutive days up to today with any tracker entry) ----
   def logging_streak = current_streak(logged_dates)
 
@@ -110,6 +137,22 @@ class Insights
   end
 
   private
+
+  def nutrition_split(label, pairs)
+    avg = pairs.sum { |_, d| d } / pairs.size
+    NutritionSplit.new(label: label, sample: pairs.size, avg_delta: avg.round(2))
+  end
+
+  # `diff` = avg delta on skipped days minus avg delta on full days.
+  def nutrition_takeaway(diff)
+    if diff > 0.05
+      "Les jours où tu sautes un repas, ton poids grimpe plutôt davantage."
+    elsif diff < -0.05
+      "Les jours où tu sautes un repas, ton poids baisse plutôt davantage."
+    else
+      "Sauter un repas ne change pas nettement ton poids."
+    end
+  end
 
   # Consecutive days ending at today. A day not yet logged today doesn't break
   # the streak (the day isn't over) — we then count back from yesterday.
