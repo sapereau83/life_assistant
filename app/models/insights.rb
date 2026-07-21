@@ -7,6 +7,7 @@ class Insights
     @today = today
     @weights  = WeightEntry.chronological.to_a
     @workouts = Workout.chronological.to_a
+    @meals    = Meal.order(:recorded_on).to_a
   end
 
   # ---- Weight ----
@@ -75,15 +76,21 @@ class Insights
   end
 
   # ---- Logging streak (consecutive days up to today with any tracker entry) ----
-  def logging_streak
-    logged = logged_dates
-    streak = 0
-    day = @today
-    while logged.include?(day)
-      streak += 1
-      day -= 1
-    end
-    streak
+  def logging_streak = current_streak(logged_dates)
+
+  # Longest run of consecutive logged days ever (the "record" to beat).
+  def best_logging_streak = longest_run(logged_dates)
+
+  # ---- Per-tracker regularity ----
+  # Each entry: current streak (consecutive days ending today) + days logged
+  # this calendar week, so the dashboard can show one tile per tracker.
+  def streaks
+    [
+      { key: :weight,  label: "Poids",  icon: "⚖️", current: current_streak(weight_dates),  week: week_count(weight_dates) },
+      { key: :meals,   label: "Repas",  icon: "🍽️", current: current_streak(meal_dates),    week: week_count(meal_dates) },
+      { key: :workout, label: "Sport",  icon: "🏃", current: current_streak(workout_dates), week: week_count(workout_dates) },
+      { key: :tasks,   label: "Tâches", icon: "✓",  current: current_streak(task_dates),    week: week_count(task_dates) }
+    ]
   end
 
   def self.pearson(xs, ys)
@@ -104,12 +111,44 @@ class Insights
 
   private
 
+  # Consecutive days ending at today. A day not yet logged today doesn't break
+  # the streak (the day isn't over) — we then count back from yesterday.
+  def current_streak(dates)
+    set = dates.to_set
+    day = set.include?(@today) ? @today : @today - 1
+    streak = 0
+    while set.include?(day)
+      streak += 1
+      day -= 1
+    end
+    streak
+  end
+
+  # Longest run of consecutive days anywhere in the set.
+  def longest_run(dates)
+    set = dates.to_set
+    best = 0
+    set.each do |d|
+      next if set.include?(d - 1) # only measure from the start of a run
+      len = 1
+      len += 1 while set.include?(d + len)
+      best = len if len > best
+    end
+    best
+  end
+
+  # Distinct days logged in the current calendar week (Mon–Sun).
+  def week_count(dates)
+    range = @today.beginning_of_week..@today.end_of_week
+    dates.to_set.count { |d| range.cover?(d) }
+  end
+
+  def weight_dates  = @weight_dates  ||= @weights.map(&:recorded_on).to_set
+  def workout_dates = @workout_dates ||= @workouts.select(&:active?).map(&:recorded_on).to_set
+  def meal_dates    = @meal_dates    ||= @meals.reject(&:blank_day?).map(&:recorded_on).to_set
+  def task_dates    = @task_dates    ||= Task.where(state: %i[todo done]).distinct.pluck(:day).to_set
+
   def logged_dates
-    @logged_dates ||= (
-      WeightEntry.pluck(:recorded_on) +
-      Workout.pluck(:recorded_on) +
-      Meal.pluck(:recorded_on) +
-      Task.where(state: %i[todo done]).pluck(:day)
-    ).to_set
+    @logged_dates ||= (weight_dates + workout_dates + meal_dates + task_dates).to_set
   end
 end

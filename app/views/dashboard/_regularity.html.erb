@@ -1,0 +1,31 @@
+<%# Per-tracker streaks + this-week counts. %>
+<div class="mb-6 rounded-lg border border-stroke bg-white p-5 shadow-default sm:p-6">
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h2 class="text-lg font-semibold text-boxdark">Régularité</h2>
+      <p class="text-sm text-body">Tes séries en cours, tracker par tracker.</p>
+    </div>
+    <span class="rounded-full bg-warning/10 px-3 py-1 text-xs font-medium text-warning">
+      record 🔥 <%= insights.best_logging_streak %> j
+    </span>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <% insights.streaks.each do |s| %>
+      <div class="rounded-lg border border-stroke bg-white p-4 text-center shadow-default">
+        <div class="text-2xl leading-none"><%= s[:icon] %></div>
+        <p class="mt-2 text-2xl font-bold text-boxdark">
+          <% if s[:current].positive? %>
+            🔥 <%= s[:current] %> <span class="text-sm font-medium text-body">j</span>
+          <% else %>
+            <span class="text-body">—</span>
+          <% end %>
+        </p>
+        <p class="mt-0.5 text-xs font-medium text-boxdark"><%= s[:label] %></p>
+        <p class="mt-1 text-xs text-body">
+          <span class="font-medium <%= s[:week].positive? ? 'text-primary' : 'text-body' %>"><%= s[:week] %></span>/7 cette semaine
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>

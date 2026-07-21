@@ -82,6 +82,9 @@
   <% end %>
 </div>
 
+<%# ============ Regularity / streaks ============ %>
+<%= render "regularity", insights: @insights %>
+
 <%# ============ Weight + Steps charts ============ %>
 <div class="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
   <%# Weight trend %>
