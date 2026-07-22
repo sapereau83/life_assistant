@@ -20,7 +20,32 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="text-body font-normal antialiased">
+  <body class="text-body font-normal antialiased" data-controller="shortcuts">
+    <%# Keyboard shortcuts cheatsheet — toggled with "?" (see shortcuts_controller). %>
+    <div data-shortcuts-target="cheatsheet"
+         data-action="click->shortcuts#hideCheatsheet"
+         class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
+      <div class="w-full max-w-sm rounded-lg border border-stroke bg-white p-6 shadow-default" data-action="click->shortcuts#stop">
+        <h2 class="mb-4 text-lg font-semibold text-boxdark">Raccourcis clavier</h2>
+        <ul class="space-y-2 text-sm text-body">
+          <% {
+               "T" => "Aujourd'hui + nouvelle tâche",
+               "P" => "Poids + nouvelle pesée",
+               "R" => "Repas + saisie du jour",
+               "S" => "Sport + nouvelle séance",
+               "D" => "Tableau de bord",
+               "L" => "Mes tâches",
+               "?" => "Afficher/masquer cette aide"
+             }.each do |key, label| %>
+            <li class="flex items-center justify-between gap-4">
+              <span><%= label %></span>
+              <kbd class="rounded border border-stroke bg-gray-2 px-2 py-0.5 font-mono text-xs font-semibold text-boxdark"><%= key %></kbd>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
     <div class="flex h-screen overflow-hidden">
       <%= render "layouts/sidebar" %>
 
